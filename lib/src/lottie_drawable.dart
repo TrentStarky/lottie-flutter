@@ -202,11 +202,17 @@ class LottieDrawable {
     var fittedSizes = applyBoxFit(fit, inputSize, outputSize);
     var sourceSize = fittedSizes.source;
     var destinationSize = fittedSizes.destination;
-    var halfWidthDelta = (outputSize.width - destinationSize.width) / 2.0;
-    var halfHeightDelta = (outputSize.height - destinationSize.height) / 2.0;
-    var dx = halfWidthDelta + alignment.x * halfWidthDelta;
-    var dy = halfHeightDelta + alignment.y * halfHeightDelta;
-    var destinationPosition = rect.topLeft.translate(dx, dy);
+    var sourceRatio = Size(sourceSize.width / outputSize.width, sourceSize.height / outputSize.height);
+    var inputSizeWithSourceRatio = Size(inputSize.width / sourceRatio.width, inputSize.height / sourceRatio.height);
+    var inputToSourceHeightDifference =outputSize.height - inputSizeWithSourceRatio.height;
+    var inputToSourceWidthDifference = outputSize.width - inputSizeWithSourceRatio.width;
+    
+    var offset = Offset(
+      inputToSourceWidthDifference != 0 ? inputToSourceWidthDifference / 2 : 0,
+      inputToSourceHeightDifference != 0 ? inputToSourceHeightDifference / 2 : 0,
+    );
+    
+    var destinationPosition = rect.topLeft.translate(offset.dx, offset.dy);
     var destinationRect = destinationPosition & destinationSize;
     var sourceRect = alignment.inscribe(sourceSize, Offset.zero & inputSize);
 
